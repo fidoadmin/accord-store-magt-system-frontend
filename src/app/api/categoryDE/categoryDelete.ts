@@ -1,8 +1,7 @@
 import { DeleteCategoryDetailInterface } from "@/types/CategoryInterface";
-import { DeleteInventoryDescriptionInterface } from "@/types/InventoryInterface";
+import { toast } from "react-toastify";
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL;
-console.log();
 
 export const deleteCategoryDetails = async (
   data: DeleteCategoryDetailInterface
@@ -16,6 +15,10 @@ export const deleteCategoryDetails = async (
   });
 
   if (!response.ok) {
-    throw new Error("Failed to delete category");
+    const errorText = await response.json();
+    toast.error(errorText.error);
+    throw new Error(
+      `Failed to delete role(status:${response.status}):${errorText}`
+    );
   }
 };
