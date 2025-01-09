@@ -109,10 +109,10 @@ function CategoriesMaintenanceContainer() {
                   prevCategories.filter((category) => category.Id !== id)
                 );
 
-                toast.success("Category deleted successfully!");
                 closeToast();
               } catch (error: any) {
                 toast.error("Failed to delete user", { position: "top-right" });
+
                 closeToast();
               }
             }}
@@ -145,132 +145,133 @@ function CategoriesMaintenanceContainer() {
           <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </div>
 
-        <div className="flex justify-end mb-4">
-          <button
-            className="flex items-center px-4 py-2 bg-success text-white rounded-xl hover:opacity-80"
-            onClick={() => setAddButton(true)}
-          >
-            <AddRounded className="mr-2" />
-            ADD
-          </button>
-        </div>
+        <div className="relative w-full">
+          <div className="py-1 flex justify-end mb-2">
+            <button
+              className="btn bg-success rounded-xl px-4 py-2 text-white flex items-center"
+              onClick={() => setAddButton(!addbutton)}
+            >
+              Add
+              <AddRounded />
+            </button>
+          </div>
+          <div className="overflow-x-auto border-2 rounded-lg mt-2">
+            <table className="w-full border-collapse table-auto">
+              <thead>
+                <tr className="bg-tablehead border text-left">
+                  <th
+                    className="cursor-pointer text-left border-b py-3 px-5 text-sm"
+                    onClick={() => handleSortChange("categoryname")}
+                  >
+                    Category Name{" "}
+                    {sortBy === "categoryname" &&
+                      (sortOrder === "asc" ? "↑" : "↓")}
+                  </th>
 
-        <div className="overflow-x-auto border-2 rounded-lg mt-2">
-          <table className="w-full border-collapse table-auto">
-            <thead>
-              <tr className="bg-tablehead border text-left">
-                <th
-                  className="cursor-pointer text-left border-b py-3 px-5 text-sm"
-                  onClick={() => handleSortChange("categoryname")}
-                >
-                  Category Name{" "}
-                  {sortBy === "categoryname" &&
-                    (sortOrder === "asc" ? "↑" : "↓")}
-                </th>
-
-                <th
-                  className="cursor-pointer text-left border-b py-3 px-5 text-sm"
-                  onClick={() => handleSortChange("created")}
-                >
-                  Created
-                  {sortBy === "created" && (sortOrder === "asc" ? "↑" : "↓")}
-                </th>
-                <th
-                  className="cursor-pointer text-left border-b py-3 px-5 text-sm"
-                  onClick={() => handleSortChange("modified")}
-                >
-                  Modified
-                  {sortBy === "modified" && (sortOrder === "asc" ? "↑" : "↓")}
-                </th>
-                <th className="cursor-pointer text-left border-b py-3 px-5 text-sm">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {categoriesLoading && (
-                <tr>
-                  <td colSpan={13} className="p-4 text-center">
-                    Loading...
-                  </td>
+                  <th
+                    className="cursor-pointer text-left border-b py-3 px-5 text-sm"
+                    onClick={() => handleSortChange("created")}
+                  >
+                    Created
+                    {sortBy === "created" && (sortOrder === "asc" ? "↑" : "↓")}
+                  </th>
+                  <th
+                    className="cursor-pointer text-left border-b py-3 px-5 text-sm"
+                    onClick={() => handleSortChange("modified")}
+                  >
+                    Modified
+                    {sortBy === "modified" && (sortOrder === "asc" ? "↑" : "↓")}
+                  </th>
+                  <th className="cursor-pointer text-left border-b py-3 px-5 text-sm">
+                    Actions
+                  </th>
                 </tr>
-              )}
-              {categoriesError && (
-                <tr>
-                  <td colSpan={13} className="p-4 text-center text-red-500">
-                    Error loading categories.
-                  </td>
-                </tr>
-              )}
-              {categoryList && categoryList.data.length > 0
-                ? categoryList.data.map((category) => (
-                    <tr className="border hover:bg-gray-50" key={category.Id}>
-                      <td className="p-4">
-                        {editingCategoryId === category.Id ? (
-                          <input
-                            type="text"
-                            value={editableCategory?.Name || ""}
-                            onChange={(e) =>
-                              setEditableCategory((prev: any) => ({
-                                ...prev!,
-                                Name: e.target.value,
-                              }))
-                            }
-                            className="border p-2 rounded"
-                          />
-                        ) : (
-                          category.Name
-                        )}
-                      </td>
-
-                      <td className="p-1">{category.Created}</td>
-                      <td className="p-1">{category.Modified}</td>
-                      <td className="p-4 flex gap-2">
-                        {editingCategoryId === category.Id ? (
-                          <>
-                            <button
-                              onClick={handleSaveCategory}
-                              className="my-1 text-success"
-                            >
-                              <SaveRounded />
-                            </button>
-                            <button
-                              onClick={handleCancelEdit}
-                              className="my-1 text-error"
-                            >
-                              <CancelRounded />
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <button
-                              onClick={() =>
-                                handleEditCategory(category.Id, category)
+              </thead>
+              <tbody>
+                {categoriesLoading && (
+                  <tr>
+                    <td colSpan={13} className="p-4 text-center">
+                      Loading...
+                    </td>
+                  </tr>
+                )}
+                {categoriesError && (
+                  <tr>
+                    <td colSpan={13} className="p-4 text-center text-red-500">
+                      Error loading categories.
+                    </td>
+                  </tr>
+                )}
+                {categoryList && categoryList.data.length > 0
+                  ? categoryList.data.map((category) => (
+                      <tr className="border hover:bg-gray-50" key={category.Id}>
+                        <td className="p-4">
+                          {editingCategoryId === category.Id ? (
+                            <input
+                              type="text"
+                              value={editableCategory?.Name || ""}
+                              onChange={(e) =>
+                                setEditableCategory((prev: any) => ({
+                                  ...prev!,
+                                  Name: e.target.value,
+                                }))
                               }
-                              className="text-success hover:underline"
-                            >
-                              <EditRoundedIcon />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(category.Id)}
-                              className="text-error hover:underline"
-                            >
-                              <DeleteRounded />
-                            </button>
-                          </>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                : !categoriesLoading && (
-                    <tr>
-                      <td colSpan={13} className="p-4 text-center">
-                        No categories found.
-                      </td>
-                    </tr>
-                  )}
-            </tbody>
-          </table>
+                              className="border p-2 rounded"
+                            />
+                          ) : (
+                            category.Name
+                          )}
+                        </td>
+
+                        <td className="p-1">{category.Created}</td>
+                        <td className="p-1">{category.Modified}</td>
+                        <td className="p-4 flex gap-2">
+                          {editingCategoryId === category.Id ? (
+                            <>
+                              <button
+                                onClick={handleSaveCategory}
+                                className="my-1 text-success"
+                              >
+                                <SaveRounded />
+                              </button>
+                              <button
+                                onClick={handleCancelEdit}
+                                className="my-1 text-error"
+                              >
+                                <CancelRounded />
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() =>
+                                  handleEditCategory(category.Id, category)
+                                }
+                                className="text-success hover:underline"
+                              >
+                                <EditRoundedIcon />
+                              </button>
+                              <button
+                                onClick={() => handleDelete(category.Id)}
+                                className="text-error hover:underline"
+                              >
+                                <DeleteRounded />
+                              </button>
+                            </>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  : !categoriesLoading && (
+                      <tr>
+                        <td colSpan={13} className="p-4 text-center">
+                          No categories found.
+                        </td>
+                      </tr>
+                    )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
       <Pagination
