@@ -78,6 +78,7 @@ const InvDescAddOverlay = ({
   const handleOverlayClick = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
+  console.log;
 
   return (
     <>
