@@ -98,12 +98,16 @@ export default function Login() {
           </h1>
         </div>
       </div>
+
       <div className="rightContent md:w-1/2 w-full md:flex justify-evenly items-center">
         <div className="divider h-0.5 w-[80vw] bg-primary md:hidden my-5 mx-auto"></div>
         <div className="divider h-[60vh] w-0.5 bg-primary hidden md:block"></div>
+
         <div className="login">
           <div className="loginTitle text-center">
-            <h1 className="font-black text-text md:text-2xl">Login</h1>
+            <h1 className="font-black text-text md:text-2xl text-xl">
+              Login (Accord)
+            </h1>
           </div>
           <div className="loginForm mt-2 md:mt-5 px-2">
             <form

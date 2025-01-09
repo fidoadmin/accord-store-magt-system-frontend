@@ -84,11 +84,11 @@ const sections: SidebarSectionInterface[] = [
         id: "systemlist",
         href: "/maintenance/system-maintenance",
       },
-      {
-        title: "User",
-        id: "userlist",
-        href: "/maintenance/usermaintenance",
-      },
+      // {
+      //   title: "User",
+      //   id: "userlist",
+      //   href: "/maintenance/usermaintenance",
+      // },
     ],
   },
   // {

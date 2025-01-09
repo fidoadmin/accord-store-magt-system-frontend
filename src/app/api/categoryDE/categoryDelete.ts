@@ -2,6 +2,7 @@ import { DeleteCategoryDetailInterface } from "@/types/CategoryInterface";
 import { DeleteInventoryDescriptionInterface } from "@/types/InventoryInterface";
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL;
+console.log();
 
 export const deleteCategoryDetails = async (
   data: DeleteCategoryDetailInterface

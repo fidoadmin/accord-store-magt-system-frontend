@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { AddRounded, DeleteRounded } from "@mui/icons-material";
+import {
+  AddRounded,
+  CancelRounded,
+  DeleteRounded,
+  SaveRounded,
+} from "@mui/icons-material";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import { useCategoryList } from "@/app/hooks/categories/useCategoryList";
 import { getCookie } from "cookies-next";
@@ -225,15 +230,15 @@ function CategoriesMaintenanceContainer() {
                           <>
                             <button
                               onClick={handleSaveCategory}
-                              className="border rounded-xl px-4 py-2 bg-success text-white hover:opacity-80"
+                              className="my-1 text-success"
                             >
-                              Save
+                              <SaveRounded />
                             </button>
                             <button
                               onClick={handleCancelEdit}
-                              className="border rounded-xl px-4 py-2 bg-error text-white hover:opacity-80"
+                              className="my-1 text-error"
                             >
-                              Cancel
+                              <CancelRounded />
                             </button>
                           </>
                         ) : (
