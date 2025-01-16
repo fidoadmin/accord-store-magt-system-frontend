@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
-import { AddRounded, DeleteRounded } from "@mui/icons-material";
+import {
+  AddRounded,
+  CancelRounded,
+  DeleteRounded,
+  SaveRounded,
+} from "@mui/icons-material";
 import { useCategoryList } from "@/app/hooks/categories/useCategoryList";
 import { useContainersForMaintenance } from "@/app/hooks/containers/useContainerListForMaintenance";
 import Pagination from "../../Pagination";
@@ -94,7 +99,7 @@ export default function ContainersMaintenanceContainer() {
     }
   };
   const handleEditClick = (pack: any) => {
-    setEditingIndex(pack.ContainerId);
+    setEditingIndex(pack.Id);
     setEditableData({
       NumberOfUnits: pack.NumberOfUnits ? pack.NumberOfUnits : undefined,
       Size: pack.Size,
@@ -265,7 +270,7 @@ export default function ContainersMaintenanceContainer() {
                 <tr key={container.Id} className="border-b hover:bg-gray-50">
                   <td className="p-4">{container.Type || "N/A"}</td>
                   <td className="p-4">
-                    {editingIndex === container.ContainerId ? (
+                    {editingIndex === container.Id ? (
                       <input
                         type="number"
                         value={
@@ -288,7 +293,7 @@ export default function ContainersMaintenanceContainer() {
                     )}
                   </td>
                   <td className="p-4">
-                    {editingIndex === container.ContainerId ? (
+                    {editingIndex === container.Id ? (
                       <input
                         type="text"
                         value={editableData?.Size || ""}
@@ -307,7 +312,7 @@ export default function ContainersMaintenanceContainer() {
                     )}
                   </td>
                   <td className="p-4">
-                    {editingIndex === container.ContainerId ? (
+                    {editingIndex === container.Id ? (
                       <input
                         type="text"
                         value={editableData?.SmallUnit || ""}
@@ -328,19 +333,16 @@ export default function ContainersMaintenanceContainer() {
                   <td className="p-4">{container.Created || "N/A"}</td>
                   <td className="p-4">{container.Modified || "N/A"}</td>
                   <td className="p-4 flex gap-2">
-                    {editingIndex === container.ContainerId ? (
+                    {editingIndex === container.Id ? (
                       <>
                         <button
                           onClick={handleSave}
-                          className="border rounded-xl px-4 py-2 bg-success text-white hover:opacity-80"
+                          className="mr-2 text-success"
                         >
-                          Save
+                          <SaveRounded />
                         </button>
-                        <button
-                          onClick={handleCancel}
-                          className="border rounded-xl px-4 py-2 bg-error text-white hover:opacity-80"
-                        >
-                          Cancel
+                        <button onClick={handleCancel} className="text-error">
+                          <CancelRounded />
                         </button>
                       </>
                     ) : (
@@ -351,7 +353,7 @@ export default function ContainersMaintenanceContainer() {
                         />
                         <DeleteRounded
                           style={{ color: "red" }}
-                          onClick={() => handleDelete(container.ContainerId)}
+                          onClick={() => handleDelete(container.Id)}
                         />
                       </>
                     )}

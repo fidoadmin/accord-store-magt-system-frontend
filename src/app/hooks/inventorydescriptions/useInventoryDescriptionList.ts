@@ -6,30 +6,20 @@ export const useInventoryDescriptionList = (
   params: {
     page?: number;
     limit?: number;
-    categoryId?: string;
-    companyId?: string;
-    branchId?: string;
     search?: string;
     varsortby?: string;
     varsortorder?: string;
-    isCheckout?: boolean;
-    isFromDispatch?: boolean;
   }
 ) => {
   const inventoryQuery = useQuery({
-    queryKey: ["inventoryDescriptions", params],
+    queryKey: ["inventorydescriptions", params],
     queryFn: () =>
       fetchInventoryDescriptionList(
         params.page,
         params.limit,
-        params.categoryId,
-        params.branchId,
-        params.companyId,
         params.search,
         params.varsortby,
-        params.varsortorder,
-        params.isCheckout,
-        params.isFromDispatch
+        params.varsortorder
       ),
     enabled: !!authKey,
     placeholderData: keepPreviousData,

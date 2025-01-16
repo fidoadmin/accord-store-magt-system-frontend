@@ -11,13 +11,13 @@ export const useInventoryDescriptionForMaintenance = (
     varsortorder?: string;
     fromDate?: string;
     toDate?: string;
-    isFromReport?:boolean;
+    isFromReport?: boolean;
     outofstock?: boolean;
     instock?: boolean;
   }
 ) => {
   const inventoryQuery = useQuery({
-    queryKey: ["inventoryDescriptionsForMaintenance", params],
+    queryKey: ["inventorydescriptions", params],
     queryFn: () =>
       fetchInventoryDescriptionForMaintenance(
         params.page,

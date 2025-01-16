@@ -10,9 +10,11 @@ export const fetchContainerListForMaintenance = async (
   categoryId?: string,
   sortBy?: string,
   sortOrder?: string,
-  type?:string
-): Promise<{ data: ContainerInterfaceForMaintenance[]; totalCount: number }> => {
-
+  type?: string
+): Promise<{
+  data: ContainerInterfaceForMaintenance[];
+  totalCount: number;
+}> => {
   const authKey = getCookie("authKey") as string;
   if (!authKey) {
     throw new Error("No authKey found");
@@ -25,10 +27,10 @@ export const fetchContainerListForMaintenance = async (
     Search: search || "",
     SortBy: sortBy || "",
     SortOrder: sortOrder || "",
-    Type:type || ""
+    Type: type || "",
   });
 
-  const response = await fetch(`${baseURL}/containers/maintenance?${query.toString()}`, {
+  const response = await fetch(`${baseURL}/containers?${query.toString()}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -41,11 +43,10 @@ export const fetchContainerListForMaintenance = async (
   }
 
   const totalCount = parseInt(
-        response.headers.get("x-page-totalcount") || "0",
-        10
-      );
-      const data = await response.json();
-    
-      return { data, totalCount };
+    response.headers.get("x-page-totalcount") || "0",
+    10
+  );
+  const data = await response.json();
 
+  return { data, totalCount };
 };

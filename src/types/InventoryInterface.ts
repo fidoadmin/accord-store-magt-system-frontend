@@ -202,6 +202,8 @@ export interface InventoryDescriptionForMaintenance {
   ModelName: string;
   PartNumber: string;
   Location: string;
+  Created: string;
+  Modified: string | null;
 }
 
 export interface AddOrUpdateInventoryDescriptionPayloadInterface {

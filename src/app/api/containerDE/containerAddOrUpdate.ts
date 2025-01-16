@@ -39,4 +39,3 @@ export const addOrUpdateContainer = async (
   }
   return response.json();
 };
-export type { AddOrUpdateContainerPayloadInterface };
