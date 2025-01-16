@@ -22,7 +22,7 @@ const SystemMaintenancePage: React.FC = () => {
       Component: InventoryDescriptionMaintenanceContainer,
     },
     { id: 1, label: "Category", Component: CategoriesMaintenanceContainer },
-    // { id: 2, label: "Branches", Component: BranchesMaintenanceContainer },
+    //{ id: 2, label: "Branches", Component: BranchesMaintenanceContainer },
     // { id: 3, label: "Companies", Component: CompaniesMaintenanceContainer },
     { id: 4, label: "Containers", Component: ContainersMaintenanceContainer },
   ];

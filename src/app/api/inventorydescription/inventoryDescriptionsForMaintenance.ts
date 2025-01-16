@@ -12,7 +12,7 @@ export const fetchInventoryDescriptionForMaintenance = async (
   varsortorder?: string,
   fromDate?: string,
   toDate?: string,
-  isFromReport?:boolean,
+  isFromReport?: boolean,
   outofstock?: boolean,
   instock?: boolean
 ): Promise<{
@@ -36,11 +36,11 @@ export const fetchInventoryDescriptionForMaintenance = async (
     ToDate: toDate || "",
     InStock: instock?.toString() || "",
     OutStock: outofstock?.toString() || "",
-    IsFromReport:isFromReport?.toString()|| ""
+    IsFromReport: isFromReport?.toString() || "",
   });
 
   const response = await fetch(
-    `${baseURL}/inventorydescriptionsformaintenance?${query.toString()}`,
+    `${baseURL}/inventorydescriptions?${query.toString()}`,
     {
       method: "GET",
       headers: {
@@ -58,7 +58,7 @@ export const fetchInventoryDescriptionForMaintenance = async (
     response.headers.get("x-page-totalcount") || "0",
     10
   );
-  
+
   const data = await response.json();
 
   return { data, totalCount };

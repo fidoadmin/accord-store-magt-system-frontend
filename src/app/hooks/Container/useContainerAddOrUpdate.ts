@@ -10,10 +10,9 @@ export const useAddOrUpdateContainer = () => {
       if (error) {
         console.error(error);
       } else {
-        queryClient.invalidateQueries({
+        await queryClient.invalidateQueries({
           queryKey: ["containersformaintenance"],
         });
-        console.log("Container list query invalidated.");
       }
     },
   });

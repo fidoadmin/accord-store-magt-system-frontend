@@ -40,7 +40,7 @@
 //   const totalCount = parseInt(
 //     response.headers.get("x-page-totalcount") || "0",
 //     10
-//   ); // Default to 0 if header not found
+//   );
 //   const data = await response.json();
 
 //   return { data, totalCount };
