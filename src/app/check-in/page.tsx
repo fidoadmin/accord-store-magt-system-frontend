@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   AddRounded,
   EditRounded,
@@ -30,6 +30,7 @@ export default function InventoryTable() {
   const [isDetailsOverlayVisible, setIsDetailsOverlayVisible] = useState(false);
   const [isBarcodeTableVisible, setIsBarcodeTableVisible] = useState(false);
   const [editRow, setEditRow] = useState(null);
+  const [isAddDisabled, setIsAddDisabled] = useState(true);
 
   const barcodeListRef = useRef(null);
   const barcodeInputRef = useRef<HTMLInputElement | null>(null);
@@ -128,6 +129,12 @@ export default function InventoryTable() {
       setQuantity(e.target.value);
     }
   };
+  useEffect(() => {
+    const allPacketsEntered = data.every(
+      (item) => item.NumberOfPacket && item.NumberOfPacket > 0
+    );
+    setIsAddDisabled(!allPacketsEntered);
+  }, [data]);
 
   return (
     <>
@@ -135,10 +142,11 @@ export default function InventoryTable() {
       <div className="relative w-full">
         <div className="py-1 flex justify-end mb-8">
           <button
-            className="btn bg-success rounded-xl px-4 py-2 text-white flex items-center md:justify-around mb-6"
+            className="btn bg-success rounded-xl px-4 py-2 text-white flex items-center md:justify-around mb-6 disabled:opacity-40 : "
             type="button"
             onClick={handleOverlayToggle}
             title="Bulk Scan"
+            disabled={isAddDisabled}
           >
             Add
             <span className="hidden group-hover:inline pr-2">Add</span>
