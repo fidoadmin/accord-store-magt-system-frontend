@@ -9,9 +9,7 @@ import {
   CompanyDetailInterface,
 } from "@/types/CompanyInterface";
 import EditRounded from "@mui/icons-material/EditRounded";
-import { addOrUpdateCompany } from "@/app/api/companiesDE/companyAddOrUpdate";
 import { toast } from "react-toastify";
-import { deleteCompany } from "@/app/api/companiesDE/companyDelete";
 import { useDeleteCompanyMaintenance } from "@/app/hooks/company/useCompanyDelete";
 import { useAddOrUpdateCompaniesMaintenance } from "@/app/hooks/company/useCompanyAddOrUpdate";
 import SearchInput from "@/components/SearchBox";

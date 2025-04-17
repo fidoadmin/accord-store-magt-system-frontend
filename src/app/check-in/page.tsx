@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   AddRounded,
   EditRounded,
@@ -7,37 +7,30 @@ import {
   SaveRounded,
   CancelRounded,
 } from "@mui/icons-material";
-import { useSearchParams } from "next/navigation";
 import NewBulkCheckin from "@/components/NewBulkCheckin";
+import BulkCheckinOverlay from "../continuebulk/page";
 
 export default function InventoryTable() {
   interface ScannedItem {
     isEditing: boolean;
     serialNumber?: string;
-    barcode?: string;
+    barcode: string;
   }
-  const [addbutton, setAddButton] = useState(false);
+
   const [sortBy, setSortBy] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
-  const [quantity, setQuantity] = useState<number | null>(null);
-  const [scannedItems, setScannedItems] = useState<ScannedItem[]>([]);
-  const [isQuantityOverlayVisible, setIsQuantityOverlayVisible] =
-    useState(false);
-  const [showBulkInOverlay, setShowBulkCheckInOverlay] =
+  const [showBulkCheckInOverlay, setShowBulkCheckInOverlay] =
     useState<boolean>(false);
-  const searchParams = useSearchParams();
-  // const isCheckin = searchParams.get("isCheckin") === "true";
-  const [isDetailsOverlayVisible, setIsDetailsOverlayVisible] = useState(false);
-  const [isBarcodeTableVisible, setIsBarcodeTableVisible] = useState(false);
-  const [editRow, setEditRow] = useState(null);
+  const [showContinueOverlay, setShowContinueOverlay] =
+    useState<boolean>(false);
+  const [editRow, setEditRow] = useState<number | null>(null);
   const [isAddDisabled, setIsAddDisabled] = useState(true);
-
-  const barcodeListRef = useRef(null);
-  const barcodeInputRef = useRef<HTMLInputElement | null>(null);
+  const [hasScannedItems, setHasScannedItems] = useState<boolean>(false);
 
   interface Item {
     Id: number;
     BarCode: string;
+    ItemBarcode: string;
     ShortName: string;
     GenericName: string;
     NumberOfPacket: number | null;
@@ -45,18 +38,20 @@ export default function InventoryTable() {
     ExpiryDate: string;
     BatchNumber: string;
     GrossWeight: string;
+    isContinued?: boolean;
   }
 
   const initialData: Item[] = [
     {
       Id: 1,
-      BarCode: "",
-      ShortName: "",
-      GenericName: "",
-      NumberOfPacket: null,
-      ManufacturerDate: "",
-      ExpiryDate: "",
-      BatchNumber: "",
+      BarCode: "BOX123",
+      ItemBarcode: "",
+      ShortName: "Test Item",
+      GenericName: "Generic Test",
+      NumberOfPacket: 3,
+      ManufacturerDate: "2023-01-01",
+      ExpiryDate: "2024-01-01",
+      BatchNumber: "B001",
       GrossWeight: "",
     },
   ];
@@ -77,41 +72,8 @@ export default function InventoryTable() {
   const handleCancel = (id: number) => {
     setEditRow(null);
   };
+
   const handleDelete = (id: any) => alert(`Delete item with ID: ${id}`);
-  const handleOverlayClose = () => setAddButton(false);
-  const handleDeleteItem = (index: any) => {
-    setScannedItems(scannedItems.filter((_, i) => i !== index));
-  };
-
-  const handleOverlayToggle = () => {
-    setShowBulkCheckInOverlay(!showBulkInOverlay);
-  };
-  const resetState = () => {
-    console.log("Resetting state...");
-    setQuantity(null);
-    setIsQuantityOverlayVisible(false);
-    setIsBarcodeTableVisible(false);
-    setAddButton(false);
-  };
-
-  const handleQuantityConfirm = () => {
-    if (quantity && quantity > 0) {
-      setIsQuantityOverlayVisible(false);
-      setIsBarcodeTableVisible(true);
-      barcodeInputRef.current?.focus();
-    } else {
-      alert("Please enter a valid quantity.");
-    }
-  };
-
-  const handleBarcodeScan = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const barcode = event.target.value.trim();
-
-    if (barcode) {
-      setScannedItems((prev) => [...prev, { barcode, isEditing: false }]);
-      event.target.value = "";
-    }
-  };
 
   const handleChange = (e: any, id: any, field: any) => {
     const updatedData = data.map((item: any) =>
@@ -124,11 +86,8 @@ export default function InventoryTable() {
     );
 
     setData(updatedData);
-
-    if (field === "NumberOfPacket") {
-      setQuantity(e.target.value);
-    }
   };
+
   useEffect(() => {
     const allPacketsEntered = data.every(
       (item) => item.NumberOfPacket && item.NumberOfPacket > 0
@@ -136,13 +95,66 @@ export default function InventoryTable() {
     setIsAddDisabled(!allPacketsEntered);
   }, [data]);
 
+  const handleOverlayToggle = () => {
+    setShowBulkCheckInOverlay(!showBulkCheckInOverlay);
+  };
+
+  const handleContinueMoreClick = () => {
+    setShowContinueOverlay(true);
+  };
+
+  const handleContinueYes = () => {
+    const lastItem = data[data.length - 1];
+
+    const newItem = {
+      ...lastItem,
+      Id: data.length + 1,
+      BarCode: "",
+      ItemBarcode: "",
+      NumberOfPacket: null,
+      GrossWeight: "",
+      isContinued: true,
+    };
+
+    setData([...data, newItem]);
+    setEditRow(newItem.Id);
+    setShowContinueOverlay(false);
+  };
+
+  const handleContinueNo = () => {
+    alert("Operation completed");
+    setShowContinueOverlay(false);
+  };
+
+  const handleScanConfirm = (
+    scannedItems: ScannedItem[],
+    grossWeight: string
+  ) => {
+    const currentItemIndex = data.length - 1;
+    const currentItem = data[currentItemIndex];
+
+    const itemBarcodes = scannedItems.map((item) => item.barcode).join(", ");
+
+    const updatedItem = {
+      ...currentItem,
+      ItemBarcode: itemBarcodes,
+      GrossWeight: grossWeight,
+    };
+
+    const updatedData = [...data];
+    updatedData[currentItemIndex] = updatedItem;
+    setData(updatedData);
+
+    setHasScannedItems(true);
+  };
+
   return (
     <>
       <div className="text-4xl">Shipper-Checkin</div>
       <div className="relative w-full">
         <div className="py-1 flex justify-end mb-8">
           <button
-            className="btn bg-success rounded-xl px-4 py-2 text-white flex items-center md:justify-around mb-6 disabled:opacity-40 : "
+            className="btn bg-success rounded-xl px-4 py-2 text-white flex items-center md:justify-around mb-6 disabled:opacity-40"
             type="button"
             onClick={handleOverlayToggle}
             title="Bulk Scan"
@@ -153,23 +165,29 @@ export default function InventoryTable() {
             <AddRounded />
           </button>
 
-          {showBulkInOverlay && (
+          {showBulkCheckInOverlay && (
             <NewBulkCheckin
               onClose={handleOverlayToggle}
               inventory={{
-                NumberOfPacket: data[0].NumberOfPacket,
+                NumberOfPacket: data[data.length - 1].NumberOfPacket,
               }}
+              onConfirm={handleScanConfirm}
             />
           )}
         </div>
 
         <div className="overflow-x-fixed border-2 rounded-lg relative top-[-40px]">
-          <table className="w-full border-collapse table-auto">
+          <table className="min-w-full border-collapse table-auto">
             <thead>
               <tr className="border-b-2 text-left">
                 <th className="cursor-pointer text-left border-b py-3 px-5 text-sm">
                   Barcode
                 </th>
+                {hasScannedItems && (
+                  <th className="cursor-pointer text-left border-b py-3 px-5 text-sm">
+                    ItemBarcode
+                  </th>
+                )}
                 <th className="cursor-pointer text-left border-b py-3 px-5 text-sm">
                   Short Name
                 </th>
@@ -194,17 +212,36 @@ export default function InventoryTable() {
                         type="text"
                         value={item.BarCode}
                         onChange={(e) => handleChange(e, item.Id, "BarCode")}
+                        className="border rounded px-2 py-1 w-full"
                       />
                     ) : (
                       item.BarCode
                     )}
                   </td>
+                  {hasScannedItems && (
+                    <td className="border-b py-3 px-5">
+                      {editRow === item.Id ? (
+                        <input
+                          type="text"
+                          value={item.ItemBarcode}
+                          onChange={(e) =>
+                            handleChange(e, item.Id, "ItemBarcode")
+                          }
+                          className="border rounded px-2 py-1 w-full"
+                          disabled={item.isContinued}
+                        />
+                      ) : (
+                        item.ItemBarcode
+                      )}
+                    </td>
+                  )}
                   <td className="border-b py-3 px-5">
                     {editRow === item.Id ? (
                       <input
                         type="text"
                         value={item.ShortName}
                         onChange={(e) => handleChange(e, item.Id, "ShortName")}
+                        className="border rounded px-2 py-1 w-full"
                       />
                     ) : (
                       item.ShortName
@@ -218,6 +255,7 @@ export default function InventoryTable() {
                         onChange={(e) =>
                           handleChange(e, item.Id, "GenericName")
                         }
+                        className="border rounded px-2 py-1 w-full"
                       />
                     ) : (
                       item.GenericName
@@ -226,11 +264,12 @@ export default function InventoryTable() {
                   <td className="border-b py-3 px-5">
                     {editRow === item.Id ? (
                       <input
-                        type="text"
+                        type="number"
                         value={item.NumberOfPacket ?? ""}
                         onChange={(e) =>
                           handleChange(e, item.Id, "NumberOfPacket")
                         }
+                        className="border rounded px-2 py-1 w-full"
                       />
                     ) : (
                       item.NumberOfPacket
@@ -245,6 +284,7 @@ export default function InventoryTable() {
                         onChange={(e) =>
                           handleChange(e, item.Id, "ManufacturerDate")
                         }
+                        className="border rounded px-2 py-1 w-full"
                       />
                     ) : (
                       item.ManufacturerDate
@@ -256,6 +296,8 @@ export default function InventoryTable() {
                         type="text"
                         value={item.ExpiryDate}
                         onChange={(e) => handleChange(e, item.Id, "ExpiryDate")}
+                        className="border rounded px-2 py-1 w-full"
+                        disabled={item.isContinued}
                       />
                     ) : (
                       item.ExpiryDate
@@ -269,6 +311,8 @@ export default function InventoryTable() {
                         onChange={(e) =>
                           handleChange(e, item.Id, "BatchNumber")
                         }
+                        className="border rounded px-2 py-1 w-full"
+                        disabled={item.isContinued}
                       />
                     ) : (
                       item.BatchNumber
@@ -315,6 +359,24 @@ export default function InventoryTable() {
           </table>
         </div>
       </div>
+
+      {hasScannedItems && (
+        <div className="flex justify-end mt-4">
+          <button
+            className="border rounded-xl px-4 py-2 bg-success text-white"
+            onClick={handleContinueMoreClick}
+          >
+            Continue More
+          </button>
+        </div>
+      )}
+
+      {showContinueOverlay && (
+        <BulkCheckinOverlay
+          onContinue={handleContinueYes}
+          onCancel={handleContinueNo}
+        />
+      )}
     </>
   );
 }

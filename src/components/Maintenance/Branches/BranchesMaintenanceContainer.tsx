@@ -122,7 +122,6 @@ function BranchesMaintenanceContainer() {
                   prevBranch.filter((branch) => branch.Id !== id)
                 );
 
-                // toast.success("Branch deleted successfully!");
                 closeToast();
               } catch (error: any) {
                 toast.error("Failed to delete branch", {
@@ -247,7 +246,9 @@ function BranchesMaintenanceContainer() {
                     Error loading branches: {branchError}
                   </td>
                 </tr>
-              ) : branchData?.data.length === 0 ? (
+              ) : !branchData ||
+                !branchData.data ||
+                branchData.data.length === 0 ? (
                 <tr>
                   <td colSpan={3} className="p-4 text-center">
                     No branches found.
@@ -416,13 +417,13 @@ function BranchesMaintenanceContainer() {
           </div>
         </div>
       </div>
+      {/* {(branchData?.data.length ? branchData?.data.length : 0) > 0 && ( */}
       <Pagination
         currentPage={currentPage}
-        totalPages={Math.ceil(
-          (branchData?.totalCount ? branchData?.totalCount : 0) / itemsPerPage
-        )}
+        totalPages={Math.ceil((branchData?.totalCount || 0) / itemsPerPage)}
         onPageChange={(page) => setCurrentPage(page)}
       />
+      {/* )} */}
       {addButton && (
         <BranchesMaintenanceAddOverlay
           onOverlayClose={handleOverlayClose}

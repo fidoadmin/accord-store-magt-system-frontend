@@ -3,6 +3,7 @@
 @tailwind utilities;
 @import "~react-toastify/dist/ReactToastify.css";
 
+/* Remove number input spinner (cross-browser) */
 @layer base {
   input[type="number"]::-webkit-outer-spin-button,
   input[type="number"]::-webkit-inner-spin-button,
@@ -12,6 +13,8 @@
     -moz-appearance: textfield !important;
   }
 }
+
+/* CSS Variables for light mode */
 :root {
   --primary: #2279dd;
   --secondary: #1e6bc2;
@@ -24,11 +27,10 @@
   --error: #d0021b;
   --success: #26a637;
   --tablehead: #9ca3af;
-
   /* --hovertext: #000000; */
 }
 
-/* Dark mode variables */
+/* CSS Variables for dark mode */
 html.dark {
   --primary: #2279dd;
   --secondary: #4f94e3;
@@ -40,4 +42,56 @@ html.dark {
   --highlight: #ff9500;
   --error: #e74c3c;
   --success: #26a637;
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Print styles */
+@media print {
+  body {
+    background-color: white;
+    padding: 0;
+    margin: 0;
+  }
+
+  .print\:hidden {
+    display: none !important;
+  }
+
+  .shadow-md {
+    box-shadow: none !important;
+  }
+
+  .rounded-lg {
+    border-radius: 0 !important;
+  }
+
+  .p-4,
+  .p-6,
+  .p-8 {
+    padding: 0.5rem !important;
+  }
+
+  input {
+    padding: 0 !important;
+  }
+
+  .overflow-x-auto {
+    overflow-x: visible !important;
+  }
 }

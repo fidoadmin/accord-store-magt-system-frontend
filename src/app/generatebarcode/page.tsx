@@ -2,18 +2,19 @@
 import React, { useState } from "react";
 import { useBarcode } from "../hooks/barcodes/useBarcode";
 import Dropdown from "@/components/Dropdown";
-import { useCategoryList } from "../hooks/categories/useCategoryList";
-import { useInventoryDescriptionForMaintenance } from "../hooks/inventorydescriptions/useInventoryDescriptionForMaintenance";
 import { useContainers } from "../hooks/containers/useContainerList";
 import Loading from "../loading";
-import { getCookie } from "cookies-next";
+
 import { BarcodeResponseInterface } from "@/types/BarcodeInterface";
 import Barcode from "react-barcode";
 import { toast } from "react-toastify";
+import { useDropdownList } from "../hooks/globaldropdown/useGlobalDropdown";
+import { getCookie } from "cookies-next";
 
 const GenerateBarcode = () => {
   const barcodeMutation = useBarcode();
   const authKey = getCookie("authKey") as string;
+
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [formError, setFormError] = useState<string[] | null>(null);
   const [page, setPage] = useState(0);
@@ -27,6 +28,8 @@ const GenerateBarcode = () => {
     name?: string;
   }>({});
   const [barcodeList, setBarcodeList] = useState<BarcodeResponseInterface>();
+  const [filters, setFilters] = useState<Record<string, any>>({});
+  const [search, setSearch] = useState("");
 
   const handleSetOpenDropdown = (dropdownId: string) => {
     setOpenDropdown((prev) => (prev === dropdownId ? null : dropdownId));
@@ -52,12 +55,13 @@ const GenerateBarcode = () => {
     data: categoryData,
     error: categoryError,
     isLoading: categoryLoading,
-  } = useCategoryList(authKey || "", { page, limit });
+  } = useDropdownList("categories", search, filters);
 
-  const { data: inventoryDescriptionList } =
-    useInventoryDescriptionForMaintenance(authKey || "", {
-      categoryId: categoryId,
-    });
+  const { data: inventoryDescriptionList } = useDropdownList(
+    "inventorydescriptions",
+    search,
+    filters
+  );
 
   const {
     data: containerList,
@@ -119,7 +123,7 @@ const GenerateBarcode = () => {
           <Dropdown
             label="Category"
             options={
-              categoryData?.data.map((category) => ({
+              categoryData?.map((category) => ({
                 id: category.Id,
                 name: category.Name,
               })) ?? []
@@ -134,13 +138,9 @@ const GenerateBarcode = () => {
           <Dropdown
             label="Description"
             options={
-              inventoryDescriptionList?.data.map((description) => ({
+              inventoryDescriptionList?.map((description) => ({
                 id: description.Id,
-                name: `${
-                  !!description.ShortName
-                    ? `${description.ShortName} (${description.Description} )`
-                    : `${description.Description}`
-                }`,
+                name: description.Name,
               })) ?? []
             }
             isOpen={openDropdown === "description"}
@@ -184,7 +184,7 @@ const GenerateBarcode = () => {
                 containerList?.data
                   .filter(
                     (container) => container.Type === selectedContainer.name
-                  ) // Filter by selected container type
+                  )
                   .flatMap((filteredContainer) =>
                     filteredContainer.PackSize?.map((pack) => ({
                       id: pack.ContainerId,

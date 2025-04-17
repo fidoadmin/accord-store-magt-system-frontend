@@ -13,7 +13,7 @@ export const logout = async (): Promise<void> => {
     headers: {
       "Content-Type": "application/json",
       AuthKey: authKey,
-      origin: "http://localhost:3003",
+      origin: " http://localhost:3004",
     },
   });
 
@@ -21,6 +21,5 @@ export const logout = async (): Promise<void> => {
     throw new Error("Failed to logout");
   }
 
-  // Remove the auth key from the cookie
   deleteCookie("authKey");
 };

@@ -7,6 +7,7 @@ import { getCookie } from "cookies-next";
 import { toast } from "react-toastify";
 import { SaveRounded, CancelRounded } from "@mui/icons-material";
 import { AddOrUpdateContainerPayloadInterface } from "@/types/ContainerInterface";
+import { useDropdownList } from "@/app/hooks/globaldropdown/useGlobalDropdown";
 
 const ContainerAddOverlay = ({
   onOverlayClose,
@@ -20,6 +21,8 @@ const ContainerAddOverlay = ({
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [authKey, setAuthKey] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [filters, setFilters] = useState<Record<string, any>>({});
+  const [search, setSearch] = useState("");
 
   const [descAddData, setDescAddData] =
     useState<AddOrUpdateContainerPayloadInterface>({
@@ -43,17 +46,10 @@ const ContainerAddOverlay = ({
     }) || {};
 
   const {
-    data: categoryList = [],
+    data: categoryList,
     error: categoriesError,
     isLoading: categoriesLoading,
-  } = useCategoryList(authKey || "", {
-    page: 1,
-    limit: itemsPerPage,
-  });
-
-  const categories = Array.isArray(categoryList)
-    ? categoryList
-    : categoryList?.data || [];
+  } = useDropdownList("categories", search, filters);
 
   const handleSelectCategory = (option: {
     id: string;
@@ -136,7 +132,7 @@ const ContainerAddOverlay = ({
         <Dropdown
           label="Category"
           options={
-            categories.map((category) => ({
+            categoryList?.map((category) => ({
               id: category.Id,
               name: category.Name,
             })) ?? []

@@ -274,14 +274,13 @@ function CategoriesMaintenanceContainer() {
           </div>
         </div>
       </div>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={Math.ceil(
-          (categoryList?.totalCount ? categoryList?.totalCount : 0) /
-            itemsPerPage
-        )}
-        onPageChange={(page) => setCurrentPage(page)}
-      />
+      {(categoryList?.data.length ? categoryList?.data.length : 0) > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil((categoryList?.totalCount || 0) / itemsPerPage)}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      )}
       {addbutton && (
         <InvDescAddOverlay onOverlayClose={() => setAddButton(false)} />
       )}

@@ -1,47 +1,39 @@
-import BulkCheckinOverlay from "@/app/continuebulk/page";
-import {
-  DeleteRounded,
-  EditRoadRounded,
-  EditRounded,
-} from "@mui/icons-material";
-import { useRouter } from "next/navigation";
+"use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
+import { EditRounded, DeleteRounded } from "@mui/icons-material";
 
 interface Inventory {
   NumberOfPacket: number | null;
 }
 
+interface ScannedItem {
+  barcode: string;
+  serialNumber?: string;
+  isEditing: boolean;
+}
+
 interface BulkCheckinProps {
   inventory: Inventory;
   onClose: () => void;
+  onConfirm: (items: ScannedItem[], grossWeight: string) => void;
 }
 
-const NewBulkCheckin: React.FC<BulkCheckinProps> = ({ inventory, onClose }) => {
+const NewBulkCheckin: React.FC<BulkCheckinProps> = ({
+  inventory,
+  onClose,
+  onConfirm,
+}) => {
   const router = useRouter();
   const [isFinalBarcode, setIsFinalBarcode] = useState<boolean>(false);
   const [barcode, setBarcode] = useState<string>("");
-  const [scannedItems, setScannedItems] = useState<
-    {
-      barcode: string;
-      serialNumber?: string;
-      isEditing: boolean;
-    }[]
-  >([]);
+  const [scannedItems, setScannedItems] = useState<ScannedItem[]>([]);
   const [grossWeight, setGrossWeight] = useState<string>("");
   const [isWeightAdded, setIsWeightAdded] = useState<boolean>(false);
   const [quantity, setQuantity] = useState<number | null>(null);
-  const [showOverlay, setShowOverlay] = useState(false);
   const barcodeListRef = useRef<HTMLDivElement | null>(null);
-
-  const hardcodedInventory = {
-    Id: "12345",
-    DescriptionId: "D123",
-    Description: "Item Description",
-    CategoryName: "Electronics",
-    SerialNumber: "SN123456789",
-  };
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -76,8 +68,8 @@ const NewBulkCheckin: React.FC<BulkCheckinProps> = ({ inventory, onClose }) => {
         }
 
         debounceTimeout.current = await setTimeout(() => {
-          if (scannedItems.length === quantity) {
-            toast.error("Cannot scan more than required quantity");
+          if (scannedItems.length === inventory.NumberOfPacket) {
+            alert("Cannot scan more than required quantity");
             setBarcode("");
             return;
           } else {
@@ -97,7 +89,7 @@ const NewBulkCheckin: React.FC<BulkCheckinProps> = ({ inventory, onClose }) => {
         clearTimeout(debounceTimeout.current);
       }
     };
-  }, [barcode]);
+  }, [barcode, inventory.NumberOfPacket, scannedItems.length]);
 
   useEffect(() => {
     if (isFinalBarcode) {
@@ -120,7 +112,7 @@ const NewBulkCheckin: React.FC<BulkCheckinProps> = ({ inventory, onClose }) => {
           return updatedItems;
         });
       } else {
-        toast.error("This barcode has already been scanned.");
+        alert("This barcode has already been scanned.");
       }
 
       setBarcode("");
@@ -152,19 +144,6 @@ const NewBulkCheckin: React.FC<BulkCheckinProps> = ({ inventory, onClose }) => {
     setBarcode("");
   };
 
-  const handleConfirmClick = async () => {
-    setShowOverlay(true);
-    console.log("Clicked");
-  };
-  const handleOverlayCancel = () => {
-    router.push(`/inventory-details/${hardcodedInventory.DescriptionId}`);
-    setShowOverlay(false);
-  };
-
-  const handleOverlayContinue = () => {
-    router.push(`/checkin/${hardcodedInventory.DescriptionId}`);
-    setShowOverlay(false);
-  };
   const handleAddWeight = () => {
     if (grossWeight.trim() === "") {
       alert("Please enter a valid Gross Weight");
@@ -172,16 +151,31 @@ const NewBulkCheckin: React.FC<BulkCheckinProps> = ({ inventory, onClose }) => {
     }
     setIsWeightAdded(true);
   };
+
+  const handleConfirm = () => {
+    if (scannedItems.length === inventory.NumberOfPacket) {
+      onConfirm(scannedItems, grossWeight);
+      onClose();
+    } else {
+      alert(
+        `Please scan exactly ${inventory.NumberOfPacket} items. Currently scanned: ${scannedItems.length}`
+      );
+    }
+  };
+
   return (
     <div className="fixed inset-0 h-screen flex items-center justify-center bg-black bg-opacity-20 backdrop-blur-md z-20">
       <div className="fixed w-1/2 min-h-72 top-20 right-1/2 translate-x-2/3 p-6 text-text rounded-3xl max-h-screen scrollbar-thin overflow-y-auto mt-4">
         <div className="w-full min-h-1 right-1/2 p-6 bg-white border border-tablehead rounded-xl">
           <div>
-            <h3 className="text-lg font-semibold mb-4">Insert Packet</h3>
-            <div className="px-4 py-2 rounded-xl border border-tablehead w-fit mb-2">
-              Total required: {inventory?.NumberOfPacket || 0}
+            <h3 className="text-2xl font-semibold mb-4 text-center">
+              Insert Packet
+            </h3>
+            <div className="flex flex-col justify-start items-end">
+              <div className="px-4 py-2 rounded-xl border border-tablehead w-fit mb-2">
+                Total required: {inventory?.NumberOfPacket || 0}
+              </div>
             </div>
-
             <div
               ref={barcodeListRef}
               className="w-full overflow-auto"
@@ -267,27 +261,28 @@ const NewBulkCheckin: React.FC<BulkCheckinProps> = ({ inventory, onClose }) => {
                     Cancel
                   </button>
                   <button
-                    onClick={handleConfirmClick}
+                    onClick={handleConfirm}
                     className="bg-success text-white px-4 py-2 rounded-xl"
-                    // disabled={
-                    //   scannedItems.length !== (inventory?.NumberOfPacket || 0)
-                    // }
                   >
                     Confirm
                   </button>
                 </div>
               )}
             </div>
+
+            {barcode && (
+              <div className="mt-4 p-2 bg-gray-100 rounded">
+                Scanning: {barcode}
+              </div>
+            )}
+
+            <div className="mt-4 text-sm text-gray-500">
+              Scanned: {scannedItems.length} / {inventory?.NumberOfPacket || 0}{" "}
+              items
+            </div>
           </div>
         </div>
       </div>
-
-      {showOverlay && (
-        <BulkCheckinOverlay
-          onContinue={handleOverlayContinue}
-          onCancel={handleOverlayCancel}
-        />
-      )}
     </div>
   );
 };

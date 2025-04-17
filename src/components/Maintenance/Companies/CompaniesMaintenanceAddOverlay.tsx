@@ -9,6 +9,7 @@ import Dropdown from "@/components/Dropdown";
 import { ClientDetailInterface } from "@/types/ClientInterface";
 import { useBranchList } from "@/app/hooks/branches/useBranchList";
 import { useCompanyTypeList } from "@/app/hooks/companies/useCompanyTypeList";
+import { useDropdownList } from "@/app/hooks/globaldropdown/useGlobalDropdown";
 
 const CompanyAddOverlay = ({
   onOverlayClose,
@@ -29,17 +30,17 @@ const CompanyAddOverlay = ({
   const [authKey, setAuthKey] = useState<string | null>(null);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const itemsPerPage = 20;
+  const [filters, setFilters] = useState<Record<string, any>>({});
+  const [search, setSearch] = useState("");
 
   const { mutate: addOrUpdateCompany } = useAddOrUpdateCompaniesMaintenance();
-  const { data: clientList, isLoading: clientLoading } = useClientList(
-    authKey || "",
-    { page: currentPage, limit: itemsPerPage }
-  );
-  const { data: branchData } = useBranchList(authKey || "", {
-    page: 0,
-    limit: 0,
-  });
+  const { data: clientList } = useDropdownList("clients", search, filters);
+
+  const {
+    data: branchData,
+    error: branchError,
+    isLoading: branchLoading,
+  } = useDropdownList("branches", search, { IsEntryPoint: "true" });
   const { data: companytypeslist } = useCompanyTypeList(authKey || "", {
     page: 0,
     limit: 0,
@@ -212,7 +213,7 @@ const CompanyAddOverlay = ({
           label="Client"
           showLabel
           options={
-            clientList?.data?.map((client: ClientDetailInterface) => ({
+            clientList?.map((client: ClientDetailInterface) => ({
               id: client.Id!,
               name: client.Name!,
             })) ?? []
@@ -223,13 +224,12 @@ const CompanyAddOverlay = ({
           placeholder="Select a client"
           required
         />
-
         <div className="mb-4">
           <label className="text-sm text-text">
             Branch: <span className="text-error">*</span>
           </label>
           <div className="w-full inner-border-2 inner-border-primary rounded-xl p-2">
-            {branchData?.data?.map((branch) => (
+            {branchData?.map((branch) => (
               <div key={branch.Id} className="flex items-center">
                 <input
                   type="checkbox"

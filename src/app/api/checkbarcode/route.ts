@@ -18,7 +18,7 @@ export const checkbarcode = async (
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      origin: "http://localhost:3003",
+      origin: " http://localhost:3004",
       AuthKey: authKey,
     },
     body: JSON.stringify(Data),

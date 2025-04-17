@@ -46,7 +46,9 @@ const CheckoutListOverlay: React.FC<CheckoutOverlayProps> = ({
   >(undefined);
   const generateCheckoutListMutation = useGenerateCheckoutList();
   const router = useRouter();
-  const [editableIndex, setEditableIndex] = useState<number | undefined>(undefined);
+  const [editableIndex, setEditableIndex] = useState<number | undefined>(
+    undefined
+  );
   const [editedItem, setEditedItem] = useState<{
     quantity: number | undefined;
     foc: number | undefined;
@@ -79,8 +81,10 @@ const CheckoutListOverlay: React.FC<CheckoutOverlayProps> = ({
     iscustomer: "true",
   });
 
-  customerData = customerData?.filter((item) => item.Id !== CheckoutCompanyId) || [];
-  transfereeList = transfereeList?.filter((item) => item.Id !== CheckoutCompanyId )|| [];
+  const CustomerData =
+    customerData?.data.filter((item) => item.Id !== CheckoutCompanyId) || [];
+  transfereeList =
+    transfereeList?.filter((item) => item.Id !== CheckoutCompanyId) || [];
 
   const handleRemoveFromCheckout = (
     id: string,
@@ -114,7 +118,8 @@ const CheckoutListOverlay: React.FC<CheckoutOverlayProps> = ({
     if (
       targetItem &&
       targetItem.AvailableQuantity !== undefined &&
-      ((editedItem.quantity || 0) + (editedItem.foc || 0 )) > targetItem.AvailableQuantity &&
+      (editedItem.quantity || 0) + (editedItem.foc || 0) >
+        targetItem.AvailableQuantity &&
       !isPreCheckInClicked &&
       !editedItem.isPreCheckInRequest
     ) {
@@ -217,8 +222,6 @@ const CheckoutListOverlay: React.FC<CheckoutOverlayProps> = ({
     setShowExceedQuantityPopup(false);
   };
 
-  
-
   useEffect(() => {
     setIsPreCheckInRequest(isPreCheckInClicked);
   }, [isPreCheckInClicked]);
@@ -236,11 +239,12 @@ const CheckoutListOverlay: React.FC<CheckoutOverlayProps> = ({
       setEditedItem((prev) => ({
         ...prev,
         isPreCheckInRequest:
-        isPreCheckInRequest  && ((prev.quantity || 0) + (prev.foc || 0)) > (checkoutList[editableIndex]?.AvailableQuantity || 0),
+          isPreCheckInRequest &&
+          (prev.quantity || 0) + (prev.foc || 0) >
+            (checkoutList[editableIndex]?.AvailableQuantity || 0),
       }));
     }
   }, [editedItem.quantity, editedItem.foc]);
-  
 
   const handleGenerateCheckoutList = async (e: FormEvent) => {
     e.preventDefault;
@@ -313,7 +317,7 @@ const CheckoutListOverlay: React.FC<CheckoutOverlayProps> = ({
     <>
       <div
         className="fixed inset-0 h-screen flex items-center justify-center bg-black bg-opacity-20 backdrop-blur-md z-20"
-        onClick={onOverlayClose}
+        // onClick={onOverlayClose}
       />
       <div className="fixed w-2/3 md:w-1/2 p-6 top-10 right-1/2 translate-x-2/3 text-xs md:text-sm bg-white border border-grey text-text rounded-3xl z-40 space-y-2 overflow-y-auto max-h-screen scrollbar-thin">
         <div className="flex justify-between items-center">
@@ -422,21 +426,26 @@ const CheckoutListOverlay: React.FC<CheckoutOverlayProps> = ({
                         <td className="lg:px-2 text-center">
                           {editableIndex === index ? (
                             <input
-                            type="checkbox"
-                            checked={editedItem.isPreCheckInRequest}
-                            onChange={(e) => {
-                              const checkedValue = e.target.checked;
-                              setEditedItem((prev) => ({
-                                ...prev,
-                                isPreCheckInRequest: checkedValue,
-                              }));
-                            }}
-                            className="border rounded p-1"
-                            disabled={
-                              ((editedItem.quantity ? editedItem.quantity : 0) + (editedItem.foc ? editedItem.foc : 0)) <= (item.AvailableQuantity ? item.AvailableQuantity : 0)
-                            }
-                          />
-                          
+                              type="checkbox"
+                              checked={editedItem.isPreCheckInRequest}
+                              onChange={(e) => {
+                                const checkedValue = e.target.checked;
+                                setEditedItem((prev) => ({
+                                  ...prev,
+                                  isPreCheckInRequest: checkedValue,
+                                }));
+                              }}
+                              className="border rounded p-1"
+                              disabled={
+                                (editedItem.quantity
+                                  ? editedItem.quantity
+                                  : 0) +
+                                  (editedItem.foc ? editedItem.foc : 0) <=
+                                (item.AvailableQuantity
+                                  ? item.AvailableQuantity
+                                  : 0)
+                              }
+                            />
                           ) : (
                             <input
                               type="checkbox"
@@ -514,7 +523,7 @@ const CheckoutListOverlay: React.FC<CheckoutOverlayProps> = ({
                   label="Company"
                   showLabel={false}
                   options={
-                    customerData?.map((customer) => ({
+                    customerData?.data.map((customer) => ({
                       id: customer.Id,
                       name: customer.Name,
                     })) || []

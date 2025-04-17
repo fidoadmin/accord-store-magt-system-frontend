@@ -1,5 +1,7 @@
 import { useClientList } from "@/app/hooks/client/useClientList";
 import { useCompanyList } from "@/app/hooks/companies/useCompanyList";
+import { useCompanyTypeList } from "@/app/hooks/companies/useCompanyTypeList";
+import { useDropdownList } from "@/app/hooks/globaldropdown/useGlobalDropdown";
 import { useRoleList } from "@/app/hooks/role/useRoleList";
 import { useAddOrUpdateUserMaintenance } from "@/app/hooks/user/useUserAddOrUpdate";
 import Dropdown from "@/components/Dropdown";
@@ -29,6 +31,8 @@ const UserAddOverlay = ({ onOverlayClose }: { onOverlayClose: () => void }) => {
   const [sortOrder, setSortOrder] = useState<string>("asc");
   const [visible, setVisible] = useState<boolean>(false);
   const [reVisible, setReVisible] = useState<boolean>(false);
+  const [filters, setFilters] = useState<Record<string, any>>({});
+  const [search, setSearch] = useState("");
 
   const itemsPerPage = 20;
   const [category, setCategory] = useState<{ name?: string; id?: string }>({});
@@ -45,36 +49,24 @@ const UserAddOverlay = ({ onOverlayClose }: { onOverlayClose: () => void }) => {
     Password: "",
   };
 
-  const { data: clientList, isLoading: clientLoading } = useClientList(
-    authKey || "",
-    { page: currentPage, limit: itemsPerPage }
-  );
+  const { data: clientList } = useDropdownList("clients", search, filters);
 
   const {
     data: roleList,
     error: roleError,
     isLoading: roleLoading,
-  } = useRoleList(authKey || "", {
-    page: currentPage,
-    limit: itemsPerPage,
-    search: searchTerm,
-    sortBy,
-    sortOrder,
+  } = useDropdownList("roles", search, filters);
+
+  const { data: CompanyTypeList } = useCompanyTypeList(authKey || "", {
+    search,
   });
 
-  const {
-    data: CompanyData,
-    error: CompanyError,
-    isLoading: CompanyLoading,
-  } = useCompanyList(authKey || "", {
-    page: currentPage,
-    limit: itemsPerPage,
-    search: searchTerm,
-    sortBy: sortBy,
-    sortOrder: sortOrder,
-    isinternal: "",
+  const { data: InternalCompany } = useDropdownList("companies", search, {
+    CompanyTypeId:
+      CompanyTypeList?.data
+        ?.filter((companyType) => companyType.Code === "COMPANYTYPE-INTERNAL")
+        .map((internal) => internal.Id) ?? [],
   });
-
   const [descAddData, setDescAddData] =
     useState<AddOrUpdateUserPayloadInterface>(initialInventoryData);
 
@@ -240,7 +232,7 @@ const UserAddOverlay = ({ onOverlayClose }: { onOverlayClose: () => void }) => {
           label="Client"
           showLabel
           options={
-            clientList?.data?.map((client: ClientDetailInterface) => ({
+            clientList?.map((client: ClientDetailInterface) => ({
               id: client.Id!,
               name: client.Name!,
             })) ?? []
@@ -255,7 +247,7 @@ const UserAddOverlay = ({ onOverlayClose }: { onOverlayClose: () => void }) => {
           label="Role"
           showLabel
           options={
-            roleList?.data?.map((role: RoleDetailInterface) => ({
+            roleList?.map((role: any) => ({
               id: role.Id!,
               name: role.Name!,
             })) ?? []
@@ -270,7 +262,7 @@ const UserAddOverlay = ({ onOverlayClose }: { onOverlayClose: () => void }) => {
           label="Company"
           showLabel
           options={
-            CompanyData?.data.map((company: CompanyInterface) => ({
+            InternalCompany?.map((company: any) => ({
               id: company.Id!,
               name: company.Name!,
             })) ?? []

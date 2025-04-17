@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { AddRounded, EditRounded } from "@mui/icons-material";
 import { getCookie } from "cookies-next";
@@ -234,13 +235,13 @@ function ClientMaintenanceContainer() {
           </div>
         </div>
       </div>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={Math.ceil(
-          (clientList?.totalCount ? clientList?.totalCount : 0) / itemsPerPage
-        )}
-        onPageChange={(page) => setCurrentPage(page)}
-      />
+      {(clientList?.data.length ? clientList?.data.length : 0) > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil((clientList?.totalCount || 0) / itemsPerPage)}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      )}
       {addbutton && (
         <ClientAddOverlay
           onOverlayClose={handleOverlayClose}

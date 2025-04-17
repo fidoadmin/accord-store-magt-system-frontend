@@ -1,4 +1,3 @@
-import { AddOrUpdateClientPayloadInterface } from "@/types/ClientInterface";
 import { toast } from "react-toastify";
 import { SaveRounded, CancelRounded } from "@mui/icons-material";
 import { getCookie } from "cookies-next";

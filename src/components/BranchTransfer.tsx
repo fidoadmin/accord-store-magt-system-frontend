@@ -80,7 +80,7 @@ export default function Checkout() {
 
   const getAvailableOptions = () => {
     const filteredBranchList =
-      branchData?.filter(
+      branchData?.data.filter(
         (remainingBranch) => branch.id !== remainingBranch.Id
       ) ?? [];
 
