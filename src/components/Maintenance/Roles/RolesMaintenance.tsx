@@ -258,11 +258,13 @@ function RoleMaintenanceContainer() {
           </div>
         </div>
       </div>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={Math.ceil((roleList?.totalCount || 0) / itemsPerPage)}
-        onPageChange={setCurrentPage}
-      />
+      {(roleList?.data.length ? roleList?.data.length : 0) > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil((roleList?.totalCount || 0) / itemsPerPage)}
+          onPageChange={setCurrentPage}
+        />
+      )}
       {addbutton && <RoleAddOverlay onOverlayClose={handleOverlayClose} />}
     </>
   );

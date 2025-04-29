@@ -9,7 +9,7 @@ export const login = async (Data: LoginRequest): Promise<LoginResponse> => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      origin: "http://localhost:3003",
+      origin: " http://localhost:3004",
     },
     body: JSON.stringify(Data),
   });
@@ -21,7 +21,6 @@ export const login = async (Data: LoginRequest): Promise<LoginResponse> => {
 
   const responseData = await response.json();
 
-  // Set cookies for auth and user data
   setCookie("authKey", responseData.AuthKey, { path: "/", httpOnly: true });
   setCookie("userId", responseData.UserId, { path: "/" });
   setCookie("firstName", responseData.FirstName, { path: "/" });

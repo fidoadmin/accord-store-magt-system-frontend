@@ -5,7 +5,6 @@ import { getCookie } from "cookies-next";
 import { useUserGetList } from "../hooks/users/useUserGetList";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Dropdown from "@/components/Dropdown";
 import { useClientList } from "../hooks/client/useClientList";
 import { useRoleList } from "../hooks/role/useRoleList";
 import { useCompanyList } from "../hooks/companies/useCompanyList";
@@ -27,7 +26,6 @@ import { useAddOrUpdateUserPassword } from "../hooks/users/useUserPassword";
 function ProfilePage() {
   const authKey = getCookie("authKey") as string;
   const userId = getCookie("userId") as string;
-
   const [users, setUsers] = useState<any[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);

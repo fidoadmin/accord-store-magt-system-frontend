@@ -5,6 +5,8 @@ import { AddOrUpdateInventoryDescriptionPayloadInterface } from "@/types/Invento
 import { useAddOrUpdateInventoryDescription } from "@/app/hooks/inventorydescriptions/useInventoryDescriptionAddOrUpdate";
 import { useCategoryList } from "@/app/hooks/categories/useCategoryList";
 import { CancelRounded, SaveRounded } from "@mui/icons-material";
+import { useDropdownList } from "@/app/hooks/globaldropdown/useGlobalDropdown";
+import Dropdown from "@/components/Dropdown";
 
 const InvDescAddOverlay = ({
   onOverlayClose,
@@ -12,8 +14,11 @@ const InvDescAddOverlay = ({
   onOverlayClose: () => void;
 }) => {
   const [authKey, setAuthKey] = useState<string | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [hasModelName, setHasModelName] = useState<boolean>(false);
   const [hasExpiryDate, setHasExpiryDate] = useState<boolean>(false);
+  const [filters, setFilters] = useState<Record<string, any>>({});
+  const [search, setSearch] = useState("");
 
   const itemsPerPage = 20;
 
@@ -39,48 +44,17 @@ const InvDescAddOverlay = ({
     const key = getCookie("authKey") as "";
     setAuthKey(key);
   }, []);
-
-  const { data: categoryList } = useCategoryList(authKey || "", {
-    page: 1,
-    limit: itemsPerPage,
-  });
-
-  useEffect(() => {
-    if (categoryList?.data?.length) {
-      const medicineCategory = categoryList.data.find(
-        (category) => category.Name === "Medicine"
-      );
-      if (medicineCategory) {
-        setSelectedCategoryId(medicineCategory.Id);
-        setDescAddData((prev) => ({
-          ...prev,
-          CategoryId: medicineCategory.Id,
-          CategoryName: medicineCategory.Name,
-        }));
-        setHasModelName(medicineCategory.HasModelName || false);
-      }
-    }
-  }, [categoryList]);
+  const {
+    data: categoryList,
+    error: categoriesError,
+    isLoading: categoriesLoading,
+  } = useDropdownList("categories", search, filters);
+  const handleSetOpenDropdown = (dropdownId: string) => {
+    setOpenDropdown((prev) => (prev === dropdownId ? null : dropdownId));
+  };
 
   const handleChange = (e: any) => {
     setDescAddData({ ...descAddData, [e.target.name]: e.target.value });
-  };
-
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedId = e.target.value;
-    setSelectedCategoryId(selectedId);
-
-    const selectedCategory = categoryList?.data.find(
-      (category) => category.Id === selectedId
-    );
-    if (selectedCategory) {
-      setDescAddData((prev) => ({
-        ...prev,
-        CategoryId: selectedCategory.Id,
-        CategoryName: selectedCategory.Name,
-      }));
-      setHasModelName(selectedCategory.HasModelName || false);
-    }
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -107,6 +81,20 @@ const InvDescAddOverlay = ({
     e.stopPropagation();
   };
 
+  const handleSelectCategory = (option: {
+    id: string;
+    name: string;
+    hasModelName?: boolean;
+    hasPartNumber?: boolean;
+  }) => {
+    setDescAddData({
+      ...descAddData,
+      CategoryId: option.id,
+      CategoryName: option.name,
+    });
+    console.log(option);
+    setHasModelName(option.hasModelName!);
+  };
   return (
     <>
       <div
@@ -120,27 +108,21 @@ const InvDescAddOverlay = ({
           </h1>
         </div>
         <div className="h-full w-full">
-          <label
-            htmlFor="category-dropdown"
-            className="block mb-2 text-sm font-medium"
-          >
-            Category
-          </label>
-          <select
-            id="category-dropdown"
-            className="inner-border-2 inner-border-primary rounded-xl p-2 w-full"
-            value={selectedCategoryId}
-            onChange={handleCategoryChange}
-          >
-            <option value="" disabled>
-              Select a Category
-            </option>
-            {categoryList?.data.map((category) => (
-              <option key={category.Id} value={category.Id}>
-                {category.Name}
-              </option>
-            ))}
-          </select>
+          <Dropdown
+            placeholder="Select a Category"
+            label="Category"
+            showLabel
+            options={
+              categoryList?.map((category) => ({
+                id: category.Id,
+                name: category.Name,
+              })) ?? []
+            }
+            onSelect={handleSelectCategory}
+            isOpen={openDropdown === "category"}
+            setIsOpen={() => handleSetOpenDropdown("category")}
+            search={true}
+          />
         </div>
 
         <div>

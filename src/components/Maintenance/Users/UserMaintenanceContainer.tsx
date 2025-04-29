@@ -403,13 +403,13 @@ function UserMaintenanceContainer() {
               </tbody>
             </table>
           </div>
-          <Pagination
-            currentPage={currentPage}
-            totalPages={Math.ceil(
-              (userList?.totalCount ? userList?.totalCount : 0) / itemsPerPage
-            )}
-            onPageChange={(page) => setCurrentPage(page)}
-          />
+          {(userList?.data.length ? userList?.data.length : 0) > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.ceil((userList?.totalCount || 0) / itemsPerPage)}
+              onPageChange={(page) => setCurrentPage(page)}
+            />
+          )}
           {addbutton && <UserAddOverlay onOverlayClose={handleOverlayClose} />}
         </div>
       </div>

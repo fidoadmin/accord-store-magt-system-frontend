@@ -1,5 +1,6 @@
 "use client";
 
+import BulkCheckinOverlay from "@/app/continuebulk/page";
 import { useAddOrUpdateBulkCheckin } from "@/app/hooks/bulkcheckin/useBulkCheckinAddOrUpdate";
 import { BulkCheckinInterface } from "@/types/BulkCheckin";
 import { DeleteRounded, EditRounded } from "@mui/icons-material";
@@ -16,11 +17,11 @@ const BarcodeReaderPage = ({
 }: {
   onClose: () => void;
   inventory: {
-    Id: string;
-    DescriptionId: string;
-    Description: string;
-    CategoryName: string;
-    SerialNumber: string;
+    // Id: string;
+    // DescriptionId: string;
+    // Description: string;
+    // CategoryName: string;
+    // SerialNumber: string;
   };
 }) => {
   const [barcode, setBarcode] = useState<string>("");
@@ -31,6 +32,19 @@ const BarcodeReaderPage = ({
       isEditing: boolean;
     }[]
   >([]);
+  const hardcodedInventory = {
+    Id: "12345",
+    DescriptionId: "D123",
+    Description: "Item Description",
+    CategoryName: "Electronics",
+    SerialNumber: "SN123456789",
+  };
+
+  const hardcodedScannedItems = [
+    { barcode: "barcode123", serialNumber: "SN123456789", isEditing: false },
+    { barcode: "barcode124", serialNumber: "SN987654321", isEditing: false },
+    { barcode: "barcode125", serialNumber: null, isEditing: true },
+  ];
   const router = useRouter();
   const [isFinalBarcode, setIsFinalBarcode] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -45,6 +59,10 @@ const BarcodeReaderPage = ({
   const [Bulk, setBulk] = useState<any[]>([]);
   const barcodeListRef = useRef<HTMLDivElement | null>(null);
   const { mutateAsync: addOrUpdateBulkCheckin } = useAddOrUpdateBulkCheckin();
+  const [showOverlay, setShowOverlay] = useState(false);
+
+  const [grossWeight, setGrossWeight] = useState("");
+  const [isWeightAdded, setIsWeightAdded] = useState(false);
 
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -162,41 +180,41 @@ const BarcodeReaderPage = ({
     setBarcode("");
   };
 
-  const handleConfirmClick = async () => {
-    const missingSerialNumber = scannedItems.some(
-      (item) => inventory.SerialNumber && !item.serialNumber
-    );
-    if (missingSerialNumber) {
-      toast.error("Please enter serial numbers for all items.");
-      return;
-    }
+  // const handleConfirmClick = async () => {
+  //   const missingSerialNumber = scannedItems.some(
+  //     (item) => inventory.SerialNumber && !item.serialNumber
+  //   );
+  //   if (missingSerialNumber) {
+  //     toast.error("Please enter serial numbers for all items.");
+  //     return;
+  //   }
 
-    const payload: BulkCheckinInterface = {
-      Id: inventory.Id,
-      BulkCheckin: scannedItems.map((entry) => ({
-        BarCode: entry.barcode,
-        SerialNumber: entry.serialNumber ? entry.serialNumber : null,
-      })),
-    };
+  //   const payload: BulkCheckinInterface = {
+  //     Id: inventory.Id,
+  //     BulkCheckin: scannedItems.map((entry) => ({
+  //       BarCode: entry.barcode,
+  //       SerialNumber: entry.serialNumber ? entry.serialNumber : null,
+  //     })),
+  //   };
 
-    setBulk((prevBulk) =>
-      prevBulk.map((bulk) =>
-        bulk.Id === editingCheckinId
-          ? { ...bulk, ...editableBulkCheckin }
-          : bulk
-      )
-    );
+  //   setBulk((prevBulk) =>
+  //     prevBulk.map((bulk) =>
+  //       bulk.Id === editingCheckinId
+  //         ? { ...bulk, ...editableBulkCheckin }
+  //         : bulk
+  //     )
+  //   );
 
-    try {
-      const result = await addOrUpdateBulkCheckin(payload);
-      if (result) {
-        setEditingCheckinId(null);
-        setEditableBulkCheckin(editableBulkCheckin);
-        toast.success("Bulk Checkin updated successfully!");
-        router.push(`/inventory/details/${inventory.DescriptionId}`);
-      }
-    } catch (err) {}
-  };
+  //   try {
+  //     const result = await addOrUpdateBulkCheckin(payload);
+  //     if (result) {
+  //       setEditingCheckinId(null);
+  //       setEditableBulkCheckin(editableBulkCheckin);
+  //       toast.success("Bulk Checkin updated successfully!");
+  //       router.push(`/inventory/details/${inventory.DescriptionId}`);
+  //     }
+  //   } catch (err) {}
+  // };
 
   const handleQuantityConfirm = () => {
     setIsQuantityOverlayVisible(false);
@@ -204,11 +222,64 @@ const BarcodeReaderPage = ({
     setBarcode("");
   };
 
+  const handleConfirmClick = async () => {
+    setShowOverlay(true);
+  };
+
+  // const handleOverlayContinue = async () => {
+  //   const missingSerialNumber = scannedItems.some(
+  //     (item) => hardcodedInventory.SerialNumber && !item.serialNumber
+  //   );
+  //   if (missingSerialNumber) {
+  //     toast.error("Please enter serial numbers for all items.");
+  //     return;
+  //   }
+
+  //   const payload: BulkCheckinInterface = {
+  //     Id: hardcodedInventory.Id,
+  //     BulkCheckin: scannedItems.map((entry) => ({
+  //       BarCode: entry.barcode,
+  //       SerialNumber: entry.serialNumber ? entry.serialNumber : null,
+  //     })),
+  //   };
+
+  //   try {
+  //     const result = await addOrUpdateBulkCheckin(payload);
+  //     if (result) {
+  //       setEditingCheckinId(null);
+  //       setEditableBulkCheckin(editableBulkCheckin);
+  //       toast.success("Bulk Checkin updated successfully!");
+  //       // router.push(`/inventory/details/${hardcodedInventory.DescriptionId}`);
+  //     }
+  //   } catch (err) {
+  //     console.error("Error:", err);
+  //     toast.error("An error occurred during the bulk check-in.");
+  //   }
+  //   setShowOverlay(false);
+  // };
+
+  const handleOverlayCancel = () => {
+    router.push(`/inventory-details/${hardcodedInventory.DescriptionId}`);
+    setShowOverlay(false);
+  };
+
+  const handleOverlayContinue = () => {
+    router.push(`/checkin/${hardcodedInventory.DescriptionId}`);
+    setShowOverlay(false);
+  };
+  const handleAddWeight = () => {
+    if (grossWeight.trim() === "") {
+      alert("Please enter a valid Gross Weight");
+      return;
+    }
+    setIsWeightAdded(true);
+  };
+
   return (
     <div className="fixed inset-0 h-screen flex items-center justify-center bg-black bg-opacity-20 backdrop-blur-md z-20">
       <div className="fixed w-1/2 min-h-72 top-20 right-1/2 translate-x-2/3 p-6  text-text rounded-3xl max-h-screen scrollbar-thin overflow-y-auto mt-4">
         {isQuantityOverlayVisible && (
-          <div className="w-full min-h-1 right-1/2 p-6 bg-surface border border-primary rounded-xl">
+          <div className="w-full min-h-1 right-1/2 p-6 bg-white border border-tablehead rounded-xl">
             <div>
               <h3 className="text-lg font-semibold mb-4">
                 Enter Quantity for Bulk Check-in
@@ -220,7 +291,7 @@ const BarcodeReaderPage = ({
                   setBarcode("");
                   setQuantity(Number(e.target.value));
                 }}
-                className="p-2 border border-primary rounded-xl w-full"
+                className="p-2 border border-tablehead rounded-xl w-full"
                 placeholder="Enter Quantity"
               />
             </div>
@@ -244,17 +315,11 @@ const BarcodeReaderPage = ({
 
         {isDetailsOverlayVisible && (
           <div className="bg-white p-6 rounded-xl shadow-lg max-w-screen-lg w-full">
-            <h3 className="text-center text-2xl font-semibold mb-4">
-              Bulk Check-in
+            <h3 className="text-center text-2xl font-semibold mb-4 text-black">
+              Insert Packet
             </h3>
 
             <div className="flex flex-col">
-              <h1 className="text-lg md:text-2xl font-black text-primary text-left">
-                Description: {inventory?.Description}
-              </h1>
-              <h1 className="md:text-lg font-black text-text text-left">
-                Category: {inventory?.CategoryName}
-              </h1>
               <div className="flex flex-col justify-start items-end">
                 <div className="px-4 py-2 rounded-xl border border-tablehead w-fit mb-2">
                   Total required: {quantity ? quantity : 0}
@@ -275,15 +340,9 @@ const BarcodeReaderPage = ({
               <table className="w-full table-fixed">
                 <thead>
                   <tr className="border-2 bg-tablehead">
-                    <th className="px-4 py-2 text-left">SNo</th>
-                    <th className="px-4 py-2 text-left">Barcode</th>
-                    {inventory.SerialNumber && (
-                      <th className="px-4 py-2 text-left">
-                        Serial Number
-                        <span className="text-error pl-2">*</span>
-                      </th>
-                    )}
-                    <th className="px-4 py-2 text-left">Action</th>
+                    <th className="px-4 py-2 text-left text-black">SNo</th>
+                    <th className="px-4 py-2 text-left text-black">Barcode</th>
+                    <th className="px-4 py-2 text-left text-black">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -291,51 +350,32 @@ const BarcodeReaderPage = ({
                     <tr key={index} className="border-b">
                       <td className="px-4 py-2">{index + 1}</td>
                       <td className="px-4 py-2">{item.barcode}</td>
-                      {inventory.SerialNumber && (
-                        <td className="px-4 py-2">
-                          {item.isEditing ? (
-                            <input
-                              type="text"
-                              value={item.serialNumber}
-                              onChange={(e) =>
-                                handleSerialNumberChange(index, e.target.value)
-                              }
-                              className="w-full p-2 border rounded-xl"
-                              required
-                            />
-                          ) : (
-                            <span>{item.serialNumber}</span>
-                          )}
-                        </td>
-                      )}
                       <td className="px-4 py-2 flex justify-start gap-2">
-                        {inventory.SerialNumber && (
-                          <div className="flex gap-2">
-                            {item.isEditing ? (
-                              <>
-                                <button
-                                  onClick={() => handleSaveItem(index)}
-                                  className="bg-success text-white px-4 py-2 rounded-xl"
-                                >
-                                  Save
-                                </button>
-                                <button
-                                  onClick={() => handleEditItem(index)}
-                                  className="bg-error text-white px-4 py-2 rounded-xl"
-                                >
-                                  Cancel
-                                </button>
-                              </>
-                            ) : (
+                        <div className="flex gap-2">
+                          {item.isEditing ? (
+                            <>
+                              <button
+                                onClick={() => handleSaveItem(index)}
+                                className="bg-success text-white px-4 py-2 rounded-xl"
+                              >
+                                Save
+                              </button>
                               <button
                                 onClick={() => handleEditItem(index)}
-                                className="text-success"
+                                className="bg-error text-white px-4 py-2 rounded-xl"
                               >
-                                <EditRounded />
+                                Cancel
                               </button>
-                            )}
-                          </div>
-                        )}
+                            </>
+                          ) : (
+                            <button
+                              onClick={() => handleEditItem(index)}
+                              className="text-success"
+                            >
+                              <EditRounded />
+                            </button>
+                          )}
+                        </div>
                         {!item.isEditing && (
                           <button
                             onClick={() => handleDeleteItem(index)}
@@ -349,25 +389,52 @@ const BarcodeReaderPage = ({
                   ))}
                 </tbody>
               </table>
-              <div className="flex justify-between mt-4">
-                <button
-                  onClick={resetState}
-                  className="bg-error text-white px-4 py-2 rounded-xl"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleConfirmClick}
-                  className="bg-success text-white px-4 py-2 rounded-xl"
-                  disabled={scannedItems.length != quantity}
-                >
-                  Confirm
-                </button>
-              </div>
+
+              {scannedItems.length > 0 && (
+                <div className="flex gap-4 mt-4 items-center">
+                  <input
+                    type="text"
+                    placeholder="Enter Gross Weight"
+                    value={grossWeight}
+                    onChange={(e) => setGrossWeight(e.target.value)}
+                    className="border rounded-md px-4 py-2"
+                  />
+                  <button
+                    onClick={handleAddWeight}
+                    className="bg-success text-white px-4 py-2 rounded-xl"
+                  >
+                    Add Weight
+                  </button>
+                </div>
+              )}
+
+              {isWeightAdded && (
+                <div className="flex justify-between mt-4">
+                  <button
+                    onClick={resetState}
+                    className="bg-error text-white px-4 py-2 rounded-xl"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleConfirmClick}
+                    className="bg-success text-white px-4 py-2 rounded-xl"
+                    disabled={scannedItems.length != quantity}
+                  >
+                    Confirm
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
       </div>
+      {showOverlay && (
+        <BulkCheckinOverlay
+          onContinue={handleOverlayContinue}
+          onCancel={handleOverlayCancel}
+        />
+      )}
     </div>
   );
 };

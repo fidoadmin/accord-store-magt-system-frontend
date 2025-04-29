@@ -393,17 +393,17 @@ function InventoryDescriptionMaintenanceContainer() {
             </tbody>
           </table>
         </div>
-
-        <Pagination
-          currentPage={currentPage}
-          totalPages={Math.ceil(
-            (inventoryDescriptionList?.totalCount
-              ? inventoryDescriptionList?.totalCount
-              : 0) / itemsPerPage
-          )}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
-
+        {(inventoryDescriptionList?.data.length
+          ? inventoryDescriptionList?.data.length
+          : 0) > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={Math.ceil(
+              (inventoryDescriptionList?.totalCount || 0) / itemsPerPage
+            )}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
+        )}
         {addbutton && <InvDescAddOverlay onOverlayClose={handleOverlayClose} />}
       </div>
     </>

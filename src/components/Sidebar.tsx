@@ -43,30 +43,37 @@ const sections: SidebarSectionInterface[] = [
   //   ],
   // },
   { title: "Check-in", id: 3, href: "/check-in", icon: MoveToInboxRounded },
-  // {
-  //   title: "Checkout",
-  //   id: 4,
-  //   href: "",
-  //   icon: OutboxRounded,
-  //   subItems: [
-  //     { title: "Sales Checkout", id: "salescheckout", href: "/checkout" },
-  //     {
-  //       title: "Branch Transfer",
-  //       id: "branchtransfer",
-  //       href: "/branchtransfer",
-  //     },
-  //     {
-  //       title: "In Progress ",
-  //       id: "inprogress",
-  //       href: "/checkoutlist",
-  //     },
-  //     {
-  //       title: "Return",
-  //       id: "return",
-  //       href: "/return",
-  //     },
-  //   ],
-  // },
+  {
+    title: "Receive BranchTransfer",
+    id: 8,
+    href: "/recieveBranchTransfer",
+    icon: MoveToInboxRounded,
+  },
+  {
+    title: "Checkout",
+    id: 4,
+    href: "",
+    icon: OutboxRounded,
+    subItems: [
+      { title: "Sales Checkout", id: "salescheckout", href: "/checkout" },
+
+      {
+        title: "Branch Transfer",
+        id: "branchtransfer",
+        href: "/branchtransfer",
+      },
+      {
+        title: "In Progress ",
+        id: "inprogress",
+        href: "/checkoutlist",
+      },
+      {
+        title: "Return",
+        id: "return",
+        href: "/return",
+      },
+    ],
+  },
   // {
   //   title: "Maintenance",
   //   id: 5,
@@ -84,69 +91,69 @@ const sections: SidebarSectionInterface[] = [
         id: "systemlist",
         href: "/maintenance/system-maintenance",
       },
-      // {
-      //   title: "User",
-      //   id: "userlist",
-      //   href: "/maintenance/usermaintenance",
-      // },
+      {
+        title: "User",
+        id: "userlist",
+        href: "/maintenance/usermaintenance",
+      },
     ],
   },
-  // {
-  //   title: "Generate Barcode",
-  //   id: 6,
-  //   href: "/generatebarcode",
-  //   icon: QrCode2Rounded,
-  // },
-  // {
-  //   title: "Reports",
-  //   id: 7,
-  //   href: "",
-  //   icon: SummarizeRounded,
-  //   subItems: [
-  //     {
-  //       title: "Inventory",
-  //       id: "inventory",
-  //       href: "/report/inventory",
-  //     },
-  //     {
-  //       title: "Checkout",
-  //       id: "checkoutreport",
-  //       href: "/report/checkout",
-  //     },
-  // subItems: [
-  // { title: "In Stock", id: "all", href: "/inventory/all" },
-  // {
-  //   title: "Out of Stock",
-  //   id: "outofstock",
-  //   href: "/inventory/out-of-stock",
-  // },
-  // {
-  //   title: "Checkout",
-  //   id: "branchtransfer",
-  //   href: "/report/checkoutreport",
-  // },
-  // ],
-  //   ],
-  // },
-  // {
-  //   title: "Inventory Report",
-  //   id: 8,
-  //   href: "",
-  //   icon: SummarizeRounded,
-  //   subItems: [
-  //     { title: "In Stock", id: "all", href: "/inventory/all" },
-  //     {
-  //       title: "Out of Stock",
-  //       id: "outofstock",
-  //       href: "/inventory/out-of-stock",
-  //     },
-  //     {
-  //       title: "Checkout Report",
-  //       id: "branchtransfer",
-  //       href: "/report/checkoutreport",
-  //     },
-  //   ],
-  // },
+  {
+    title: "Generate Barcode",
+    id: 6,
+    href: "/generatebarcode",
+    icon: QrCode2Rounded,
+  },
+  {
+    title: "Reports",
+    id: 7,
+    href: "",
+    icon: SummarizeRounded,
+    subItems: [
+      {
+        title: "Inventory",
+        id: "inventory",
+        href: "/report/inventory",
+      },
+      //     {
+      //       title: "Checkout",
+      //       id: "checkoutreport",
+      //       href: "/report/checkout",
+      //     },
+      // subItems: [
+      // { title: "In Stock", id: "all", href: "/inventory/all" },
+      // {
+      //   title: "Out of Stock",
+      //   id: "outofstock",
+      //   href: "/inventory/out-of-stock",
+      // },
+      // {
+      //   title: "Checkout",
+      //   id: "branchtransfer",
+      //   href: "/report/checkoutreport",
+      // },
+      // ],
+      //   ],
+      // },
+      // {
+      //   title: "Inventory Report",
+      //   id: 8,
+      //   href: "",
+      //   icon: SummarizeRounded,
+      //   subItems: [
+      //     { title: "In Stock", id: "all", href: "/inventory/all" },
+      //     {
+      //       title: "Out of Stock",
+      //       id: "outofstock",
+      //       href: "/inventory/out-of-stock",
+      //     },
+      //     {
+      //       title: "Checkout Report",
+      //       id: "branchtransfer",
+      //       href: "/report/checkoutreport",
+      //     },
+    ],
+  },
 ];
 // const staticSubItems = [
 //   { title: "All", href: "/inventory/all" },
@@ -248,7 +255,7 @@ export default function Sidebar() {
     >
       <Link
         href={section.href}
-        className={`w-full flex items-center py-4 px-4 hover:text-secondary cursor-pointer`}
+        className={`w-full flex items-center py-4 px-4 text-secondary cursor-pointer`}
       >
         <span className={`${sidebarOpen ? "mr-4 ml-8" : "mx-auto"}`}>
           <section.icon />
@@ -365,7 +372,7 @@ export default function Sidebar() {
       )}
       <hr
         className={`w-5/6 mx-auto ${
-          pathname.includes(section.href) ? "border-primary" : "border-text"
+          pathname.includes(section.href) ? "border-primary" : "border-primary"
         }`}
       />
     </li>

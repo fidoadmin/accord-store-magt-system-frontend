@@ -13,7 +13,7 @@ export const userDetails = async (UserId: string): Promise<UserResponse> => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      origin: "http://localhost:3003",
+      origin: " http://localhost:3004",
     },
   });
 

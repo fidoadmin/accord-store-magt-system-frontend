@@ -88,3 +88,72 @@ export default function Header() {
     </header>
   );
 }
+// "use client";
+// import { LogoutRounded } from "@mui/icons-material";
+// import { useRouter } from "next/navigation";
+// import { useLogout } from "@/app/hooks/auth/useLogout";
+// import { deleteCookie, getCookie } from "cookies-next";
+// import { useEffect, useState } from "react";
+// import ThemeToggle from "./ThemeToggle";
+// import React from "react";
+// export default function Header() {
+//   const logoutMutation = useLogout();
+//   const router = useRouter();
+//   const [firstName, setFirstName] = useState<string | null>(null);
+//   const [lastName, setLastName] = useState<string | null>(null);
+//   useEffect(() => {
+//     const firstName = getCookie("firstName") as string;
+//     const lastName = getCookie("lastName") as string;
+//     setFirstName(firstName);
+//     setLastName(lastName);
+//   }, []);
+//   const handleLogout = async () => {
+//     try {
+//       await logoutMutation.mutateAsync();
+//       deleteCookie("authKey");
+//       deleteCookie("userId");
+//       deleteCookie("firstName");
+//       deleteCookie("lastName");
+//       router.push("/login");
+//     } catch (error) {
+//       console.error("Logout failed:", error);
+//     }
+//   };
+//   return (
+//     <header className="text-primary w-full px-4 md:px-8 h-20 flex items-center justify-end sticky top-0 z-10 bg-background">
+//       <div className="name font-black flex mr-10 text-primary max-md:rounded-full max-md:bg-surface max-md:p-2">
+//         <h1 className="mr-1 max-md:hidden text-text">Hello, </h1>
+//         {firstName && lastName ? (
+//           <>
+//             <h1 className="md:mr-1">
+//               {firstName.slice(0, 1)}
+//               <span className="max-md:hidden">
+//                 {firstName.slice(1, firstName.length)}
+//               </span>
+//             </h1>
+//             <h1>
+//               {lastName.slice(0, 1)}
+//               <span className="max-md:hidden">
+//                 {lastName.slice(1, lastName.length)}
+//               </span>
+//             </h1>
+//           </>
+//         ) : (
+//           <h1>Loading...</h1>
+//         )}
+//       </div>
+//       <ThemeToggle />
+//       <div className="logoutButton">
+//         <button
+//           onClick={handleLogout}
+//           className="border border-error text-error hover:text-black hover:bg-error rounded-xl py-1 px-4"
+//         >
+//           <span>
+//             <LogoutRounded />
+//           </span>
+//           Log Out
+//         </button>
+//       </div>
+//     </header>
+//   );
+// }
